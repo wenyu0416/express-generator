@@ -12,6 +12,8 @@ const dishRouter = require('./routes/dishRouter');
 const promoRouter = require('./routes/promoRouter');
 const leaderRouter = require('./routes/leaderRouter');
 const userRouter = require('./routes/users');
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 const mongoose = require('mongoose');
 
@@ -41,6 +43,8 @@ app.use(session({
     store: new FileStore()
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
 app.use('/users', userRouter);
 app.use(auth);
 
@@ -60,20 +64,15 @@ app.use(function(req, res, next) {
 // base authentication
 
 function auth(req, res, next) {
-    console.log(JSON.stringify(req.session, null, 2));
+    console.log(JSON.stringify(req.user, null, 2));
 
-    if (!req.session.user) {
+    if (!req.user) {
         var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');
-        err.status = 401;
-        return next(err);
-    } else if (req.session.user === 'authenticated') {
-        next();
-    } else {
-        var err = new Error('You are not authenticated!');
-        res.setHeader('WWW-Authenticate', 'Basic');
+        // res.setHeader('WWW-Authenticate', 'Basic');
         err.status = 403;
         return next(err);
+    } else {
+        next();
     }
 };
 
