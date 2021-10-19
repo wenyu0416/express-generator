@@ -1,6 +1,7 @@
 var express = require('express');
 const bodyParser = require('body-parser');
 const mongooese = require('mongoose');
+var authenticate = require('../authenticate');
 
 const User = require('../models/users');
 
@@ -32,22 +33,22 @@ userRouter.post('/signup', (req, res, next) => {
 })
 
 userRouter.post('/login', passport.authenticate('local'), ((req, res) => {
+    console.log('req.user._id', req.user._id);
+    var token = authenticate.getToken({ _id: req.user._id });
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.json({ status: 'You are successfully logged in' });
+    res.json({ token: token, status: 'You are successfully logged in' });
 }))
 
 userRouter.post('/logout', (req, res, next) => {
     console.log(JSON.stringify(req.session, null, 2));
 
 
-    if (!req.session) {
-        var err = new Error('You are not logged in!');
-        err.status = 401;
-        return next(err);
-    } else {
+    if (req.session) {
         req.session.destroy();
         res.clearCookie('session-id');
+        res.redirect('/')
+    } else {
         res.redirect('/')
     }
 })
