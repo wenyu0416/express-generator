@@ -11,9 +11,15 @@ userRouter.use(bodyParser.json());
 var passport = require('passport');
 
 /* GET users listing. */
-// userRouter.get('/', function(req, res, next) {
-//   res.send('respond with a resource');
-// });
+userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+    User.find({})
+        .then((leaders) => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json(leaders);
+        }, (err) => next(err))
+        .catch((err) => next(err));
+});
 
 userRouter.post('/signup', (req, res, next) => {
     User.register(new User({ username: req.body.username }),
