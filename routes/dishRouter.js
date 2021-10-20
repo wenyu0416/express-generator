@@ -175,7 +175,7 @@ dishRouter.route('/:dishId/comments/:commentId')
                 if (dish != null && dish.comments.id(req.params.commentId) != null) {
                     console.log('req.user._id = ', req.user._id);
                     if (!req.user._id.equals(dish.comments.id(req.params.commentId).author._id)) {
-                        err = new Error("You are not authorized to perfrom this operation!");
+                        err = new Error("You are not authorized to perform this operation!");
                         err.status = 403;
                         return next(err);
                     }
@@ -213,7 +213,7 @@ dishRouter.route('/:dishId/comments/:commentId')
             .then((dish) => {
                 if (dish != null && dish.comments.id(req.params.commentId) != null) {
                     if (!req.user._id.equals(dish.comments.id(req.params.commentId).author._id)) {
-                        err = new Error("You are not authorized to perfrom this operation!");
+                        err = new Error("You are not authorized to perform this operation!");
                         err.status = 403;
                         return next(err);
                     }
