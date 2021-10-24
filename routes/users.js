@@ -2,6 +2,7 @@ var express = require('express');
 const bodyParser = require('body-parser');
 const mongooese = require('mongoose');
 var authenticate = require('../authenticate');
+const cors = require('./cors');
 
 const User = require('../models/users');
 
@@ -11,15 +12,17 @@ userRouter.use(bodyParser.json());
 var passport = require('passport');
 
 /* GET users listing. */
-userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
-    User.find({})
-        .then((users) => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(users);
-        }, (err) => next(err))
-        .catch((err) => next(err));
-});
+userRouter
+    .options('/', cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get('/', cors.cors, authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+        User.find({})
+            .then((users) => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json(users);
+            }, (err) => next(err))
+            .catch((err) => next(err));
+    });
 
 userRouter.post('/signup', (req, res, next) => {
     User.register(new User({ username: req.body.username }),

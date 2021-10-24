@@ -7,16 +7,18 @@ const Leaders = require('../models/leaders');
 var authenticate = require('../authenticate');
 
 const leaderRouter = express.Router();
+const cors = require('./cors');
 
 leaderRouter.use(bodyParser.json());
 
 leaderRouter.route('/')
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
     .all((req, res, next) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         next();
     })
-    .get((req, res, next) => {
+    .get(cors.cors, (req, res, next) => {
         Leaders.find({})
             .then((leaders) => {
                 res.statusCode = 200;
@@ -47,7 +49,8 @@ leaderRouter.route('/')
 
     });
 leaderRouter.route('/:leaderId')
-    .get((req, res, next) => {
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors, (req, res, next) => {
         Leaders.findById(req.params.leaderId)
             .then((leader) => {
                 res.statusCode = 200;
