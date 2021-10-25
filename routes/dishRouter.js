@@ -222,6 +222,7 @@ dishRouter.route('/:dishId/comments/:commentId')
                         err.status = 403;
                         return next(err);
                     }
+                    console.log('dish.comments:', dish.comments);
                     dish.comments.id(req.params.commentId).remove();
                     dish.save()
                         .then((dish) => {
